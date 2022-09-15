@@ -4,7 +4,8 @@ Your task stack
 
 ## Install
 ```sh
-$
+$ curl https://raw.githubusercontent.com/LeafChage/memo/main/memo > ./memo
+$ chmod +x ./memo
 ```
 
 ## Usage
