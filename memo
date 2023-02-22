@@ -28,6 +28,15 @@ top      check your latest task
 EOS
 }
 
+declare tac
+if type gtac 1>/dev/null 2>/dev/null; then
+    tac="gtac"
+elif type tac 1>/dev/null 2>/dev/null; then
+    tac="tac"
+else
+    tac="tail -r"
+fi
+
 function core.option.reverse() {
     FLAG="0"
     for I in "${@}"; do
@@ -69,9 +78,9 @@ function core.all() {
         fi
     else
         if [ "$n" -gt "-1" ]; then
-            tail -r -n "$n" "$MEMO_FILE"
+            $tac -n "$n" "$MEMO_FILE"
         else
-            tail -r "$MEMO_FILE"
+            $tac "$MEMO_FILE"
         fi
     fi
 }
@@ -84,11 +93,11 @@ function core.push() {
     r="$(core.option.reverse "${@}")"
     txt="$(core.option.text "${@}") (at: $(date "+%Y/%m/%d_%H:%M:%S"))"
     if [ "$r" == "1" ]; then
-        tail -r "$MEMO_FILE" > "$MEMO_FILE_TMP"
+        $tac "$MEMO_FILE" > "$MEMO_FILE_TMP"
 
         echo "$txt" >> "$MEMO_FILE_TMP"
 
-        tail -r "$MEMO_FILE_TMP" > "$MEMO_FILE"
+        $tac "$MEMO_FILE_TMP" > "$MEMO_FILE"
         if [ -f "$MEMO_FILE_TMP" ]; then rm "$MEMO_FILE_TMP"; fi
     else
         echo "$txt" >> "$MEMO_FILE"
@@ -98,11 +107,11 @@ function core.push() {
 function core.pop() {
     r="$(core.option.reverse "${@}")"
     if [ "$r" == "1" ]; then
-        tail -r "$MEMO_FILE" > "$MEMO_FILE_TMP"
+        $tac "$MEMO_FILE" > "$MEMO_FILE_TMP"
 
         sed -i -e '$d' "$MEMO_FILE_TMP"
 
-        tail -r "$MEMO_FILE_TMP" > "$MEMO_FILE"
+        $tac "$MEMO_FILE_TMP" > "$MEMO_FILE"
         if [ -f "$MEMO_FILE_TMP" ]; then rm "$MEMO_FILE_TMP"; fi
     else
         sed -i -e '$d' "$MEMO_FILE"
@@ -114,7 +123,7 @@ function core.peek() {
     if [ "$r" == "1" ]; then
         head -n 1 "$MEMO_FILE"
     else
-        tail -r -n 1 "$MEMO_FILE"
+        $tac -n 1 "$MEMO_FILE"
     fi
 }
 
